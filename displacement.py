@@ -25,6 +25,8 @@ os.makedirs(STEREO_DIR, exist_ok=True)
 recording = []
 recording_active = False
 start_time = None  # Track when recording starts
+last_mono_filepath = None  # Store the last recorded mono file path
+last_stereo_filepath = None  # Store the last recorded stereo file path
 
 # Mouse tracking
 mouse_start_x, mouse_start_y = None, None
@@ -51,6 +53,7 @@ def on_move(x, y):
 
 def stop_recording():
     global recording_active, recording, mouse_start_x, mouse_start_y, mouse_final_x, mouse_final_y
+    global last_mono_filepath, last_stereo_filepath
 
     # Stop recording
     recording_active = False
@@ -78,8 +81,32 @@ def stop_recording():
         audio_mono = np.mean(audio_data, axis=1, dtype=np.float32)
         write(mono_filepath, SAMPLERATE, audio_mono)
         print(f"Mono audio saved: {mono_filepath}")
+
+        # Update last recorded file paths
+        last_mono_filepath = mono_filepath
+        last_stereo_filepath = stereo_filepath
     else:
         print("No audio recorded.")
+
+# Function to delete last recorded file
+
+
+def delete_last_recording():
+    global last_mono_filepath, last_stereo_filepath
+
+    if last_mono_filepath and os.path.exists(last_mono_filepath):
+        os.remove(last_mono_filepath)
+        print(f"Deleted last mono recording: {last_mono_filepath}")
+        last_mono_filepath = None  # Clear reference after deletion
+    else:
+        print("No mono recording to delete.")
+
+    if last_stereo_filepath and os.path.exists(last_stereo_filepath):
+        os.remove(last_stereo_filepath)
+        print(f"Deleted last stereo recording: {last_stereo_filepath}")
+        last_stereo_filepath = None  # Clear reference after deletion
+    else:
+        print("No stereo recording to delete.")
 
 # Keyboard event listener
 
@@ -108,6 +135,9 @@ def on_press(key):
                     time.sleep(0.01)  # Short sleep to avoid blocking
 
                 stop_recording()
+
+        elif key.char == 'd':  # Delete last recording
+            delete_last_recording()
 
         elif key.char == 'c':  # Quit program
             print("Exiting...")
