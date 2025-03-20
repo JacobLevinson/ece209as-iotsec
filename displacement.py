@@ -16,8 +16,8 @@ CHANNELS = 2  # Record in stereo
 RECORD_DURATION = 1.0  # Stop recording automatically after 1 second
 
 # Directories for saving files
-MONO_DIR = "displacements"
-STEREO_DIR = "displacements_stereo"
+MONO_DIR = "displacements_new"
+STEREO_DIR = "displacements_stereo_new"
 os.makedirs(MONO_DIR, exist_ok=True)
 os.makedirs(STEREO_DIR, exist_ok=True)
 
